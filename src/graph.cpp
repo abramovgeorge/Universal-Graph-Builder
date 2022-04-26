@@ -8,6 +8,8 @@
 
 using namespace std;
 
+const double eps = 1e-2;
+
 class Graph {
 public:
     Graph(Function *func, double a, double b) {
@@ -35,6 +37,17 @@ public:
             if (values_[i] > f_max_) f_max_ = values_[i];
             if (values_[i] < f_min_) f_min_ = values_[i];
         }
+        if (f_min_ < 0.0 && f_max_ > 0.0) {
+            zero_ind_ = 0;
+            for (int i =  1; i < x2_ - x1_; i++) {
+                if (abs(values_[i]) < abs(values_[zero_ind_])) {
+                    zero_ind_ = i;
+                }
+            }
+        }
+        else {
+            zero_ind_ = -1;
+        }
         this->setYStep(computeYStep());
         for (int i = 0; i < x2_ - x1_; i++) {
             values_[i] -= f_min_;
@@ -54,10 +67,29 @@ public:
         return &values_;
     }
 
+    double getA() {
+        return a_;
+    }
+
+    double getB() {
+        return b_;
+    }
+
+    int getXZero() {
+        return (int)-(a_/xstep_);
+    }
+
+    int getYZero() {
+        if (zero_ind_ == -1) {
+            return -1;
+        }
+        return (int)values_[zero_ind_];
+    }
+
 private:
     Function *func_;
     double a_, b_, xstep_, ystep_, f_max_, f_min_;
-    int x1_, y1_, x2_, y2_;
+    int x1_, y1_, x2_, y2_, zero_ind_ = -1;
     vector<double> values_;
 };
 

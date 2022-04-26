@@ -82,19 +82,19 @@ private:
                 break;
             case 's':
                 i_++;
-                res = sin(add_(x));
+                res = sin(factor_(x));
                 break;
             case 'c':
                 i_++;
-                res = cos(add_(x));
+                res = cos(factor_(x));
                 break;
             case 't':
                 i_++;
-                res = tan(add_(x));
+                res = tan(factor_(x));
                 break;
             case 'l':
                 i_++;
-                res = log(add_(x));
+                res = log(factor_(x));
                 break;
             case '(':
                 i_++;

@@ -34,7 +34,16 @@ public:
     void paintLines(vector<double> &points) {
         QPainter qp(&p_);
         qp.setRenderHint(QPainter::Antialiasing);
-        qp.setPen(QPen(getQtColor(color_), 3, Qt::DashDotLine, Qt::RoundCap));
+        qp.setPen(QPen(Qt::black, 3, Qt::SolidLine, Qt::RoundCap));
+        if (graph_->getA() < 0.0 && graph_->getB() > 0.0) {
+            auto zero_x = graph_->getXZero();
+            qp.drawLine(zero_x, y1_, zero_x, y2_);
+        }
+        auto zero_y = graph_->getYZero();
+        if (zero_y != -1) {
+            qp.drawLine(x1_, y2_ - zero_y, x2_, y2_ - zero_y);
+        }
+        qp.setPen(QPen(getQtColor(color_), 3, Qt::SolidLine, Qt::RoundCap));
         for (int i = 0; i < points.size() - 1; i++) {
             qp.drawLine(x1_ + i, y2_ - (int)points[i], x1_ + i + 1, y2_ - (int)points[i + 1]);
         }
