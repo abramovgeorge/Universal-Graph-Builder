@@ -20,6 +20,55 @@ public:
         this->computeValues();
     }
 
+    vector<double> *getValues() {
+        return &values_;
+    }
+
+    double getA() {
+        return a_;
+    }
+
+    double getB() {
+        return b_;
+    }
+
+    int getXZero() {
+        return (int)-(a_/xstep_);
+    }
+
+    int getYZero() {
+        if (zero_ind_ == -1) {
+            return -1;
+        }
+        return (int)values_[zero_ind_];
+    }
+
+    int getXOneLength() {
+        double len = (b_ - a_) / 2.0;
+        int exp = -6;
+        while (pow(10, exp) < len) {
+            exp++;
+        }
+        exp--;
+        return (int)(pow(10, exp) / xstep_);
+    }
+
+    int getYOneLength() {
+        double len = (f_max_ - f_min_) / 2.0;
+        int exp = -6;
+        while (pow(10, exp) < len) {
+            exp++;
+        }
+        exp--;
+        return (int)(pow(10, exp) * ystep_);
+    }
+
+private:
+    Function *func_;
+    double a_, b_, xstep_, ystep_, f_max_, f_min_;
+    int x1_, y1_, x2_, y2_, zero_ind_ = -1;
+    vector<double> values_;
+
     double computeXStep() {
         return (b_ - a_) / (x2_ - x1_);
     }
@@ -62,35 +111,6 @@ public:
     void setYStep(double x) {
         ystep_ = x;
     }
-
-    vector<double> *getValues() {
-        return &values_;
-    }
-
-    double getA() {
-        return a_;
-    }
-
-    double getB() {
-        return b_;
-    }
-
-    int getXZero() {
-        return (int)-(a_/xstep_);
-    }
-
-    int getYZero() {
-        if (zero_ind_ == -1) {
-            return -1;
-        }
-        return (int)values_[zero_ind_];
-    }
-
-private:
-    Function *func_;
-    double a_, b_, xstep_, ystep_, f_max_, f_min_;
-    int x1_, y1_, x2_, y2_, zero_ind_ = -1;
-    vector<double> values_;
 };
 
 #endif
