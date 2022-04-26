@@ -40,16 +40,25 @@ private:
     }
 
     double mult_(double x) {
-        double res = factor_(x);
+        double res = power_(x);
         while (func_[i_] == '*' or func_[i_] == '/') {
             if (func_[i_] == '*') {
                 i_++;
-                res *= factor_(x);
+                res *= power_(x);
             }
             else {
                 i_++;
-                res /= factor_(x);
+                res /= power_(x);
             }
+        }
+        return res;
+    }
+
+    double power_(double x) {
+        double res = factor_(x);
+        while (func_[i_] == '^') {
+            i_++;
+            res = pow(res, factor_(x));
         }
         return res;
     }
@@ -79,12 +88,28 @@ private:
                 i_++;
                 res = cos(add_(x));
                 break;
+            case 't':
+                i_++;
+                res = tan(add_(x));
+                break;
+            case 'l':
+                i_++;
+                res = log(add_(x));
+                break;
             case '(':
                 i_++;
                 res = add_(x);
                 if (func_[i_] == ')') {
                     i_++;
                 }
+                break;
+            case '|':
+                i_++;
+                res = abs(add_(x));
+                if (func_[i_] == '|') {
+                    i_++;
+                }
+                break;
             default:
                 break;
         }
