@@ -22,6 +22,12 @@ QBrush getQtColor(COLOR color) {
     }
 }
 
+void delZeros(string &s) {
+    while (s[s.size() - 1] == '0' or s[s.size() - 1] == '.') {
+        s.pop_back();
+    }
+}
+
 class Plane {
 public:
     Plane(Graph *graph, COLOR color) {
@@ -85,6 +91,9 @@ private:
             for (int line_x = x_starting_pos - len_x; line_x >= x1_; line_x -= len_x) {
                 qp->drawLine(line_x, y2_ - zero_y + 5, line_x, y2_ - zero_y - 5);
             }
+            string x_s = to_string(pow(10, graph_->getXOneLength(true)));
+            delZeros(x_s);
+            qp->drawText(x_starting_pos + len_x - 3, y2_ - zero_y - 10, QString::fromStdString(x_s));
         }
         if (isYAxis_) {
             auto zero_x = graph_->getXZero();
@@ -102,6 +111,9 @@ private:
             for (int line_y = y_starting_pos - len_y; line_y >= y1_; line_y -= len_y) {
                 qp->drawLine(x1_ + zero_x - 5, line_y, x1_ + zero_x + 5, line_y);
             }
+            string y_s = to_string(pow(10, graph_->getYOneLength(true)));
+            delZeros(y_s);
+            qp->drawText(x1_ + zero_x - 30, y_starting_pos - len_y + 5, QString::fromStdString(y_s));
         }
     }
 

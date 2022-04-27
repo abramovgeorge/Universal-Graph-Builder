@@ -43,23 +43,29 @@ public:
         return (int)values_[zero_ind_];
     }
 
-    int getXOneLength() {
+    int getXOneLength(bool isExp = false) {
         double len = (b_ - a_) / 2.0;
         int exp = -6;
         while (pow(10, exp) < len) {
             exp++;
         }
         exp--;
+        if (isExp) {
+            return exp;
+        }
         return (int)(pow(10, exp) / xstep_);
     }
 
-    int getYOneLength() {
+    int getYOneLength(bool isExp = false) {
         double len = (f_max_ - f_min_) / 2.0;
         int exp = -6;
         while (pow(10, exp) < len) {
             exp++;
         }
         exp--;
+        if (isExp) {
+            return exp;
+        }
         return (int)(pow(10, exp) * ystep_);
     }
 
