@@ -23,7 +23,10 @@ QBrush getQtColor(COLOR color) {
 }
 
 void delZeros(string &s) {
-    while (s[s.size() - 1] == '0' or s[s.size() - 1] == '.') {
+    while (s[s.size() - 1] == '0') {
+        s.pop_back();
+    }
+    if (s[s.size() - 1] == '.') {
         s.pop_back();
     }
 }
@@ -75,6 +78,7 @@ private:
     }
 
     void paintNotches(QPainter *qp) {
+        int count;
         if (isXAxis_) {
             auto zero_y = graph_->getYZero();
             auto len_x = graph_->getXOneLength();
@@ -85,15 +89,24 @@ private:
             else {
                 x_starting_pos = (x2_ - x1_) / 2;
             }
+            count = 0;
             for (int line_x = x_starting_pos; line_x <= x2_; line_x += len_x) {
                 qp->drawLine(line_x, y2_ - zero_y + 5, line_x, y2_ - zero_y - 5);
+                if (line_x != x_starting_pos) {
+                    string x_s = to_string(count * pow(10, graph_->getXOneLength(true)));
+                    delZeros(x_s);
+                    qp->drawText(line_x - 4, y2_ - zero_y - 10, QString::fromStdString(x_s));
+                }
+                count++;
             }
+            count = -1;
             for (int line_x = x_starting_pos - len_x; line_x >= x1_; line_x -= len_x) {
                 qp->drawLine(line_x, y2_ - zero_y + 5, line_x, y2_ - zero_y - 5);
+                string x_s = to_string(count * pow(10, graph_->getXOneLength(true)));
+                delZeros(x_s);
+                qp->drawText(line_x - 8, y2_ - zero_y - 10, QString::fromStdString(x_s));
+                count--;
             }
-            string x_s = to_string(pow(10, graph_->getXOneLength(true)));
-            delZeros(x_s);
-            qp->drawText(x_starting_pos + len_x - 3, y2_ - zero_y - 10, QString::fromStdString(x_s));
         }
         if (isYAxis_) {
             auto zero_x = graph_->getXZero();
@@ -105,15 +118,24 @@ private:
             else {
                 y_starting_pos = (y2_ - y1_) / 2;
             }
+            count = 0;
             for (int line_y = y_starting_pos; line_y <= y2_; line_y += len_y) {
                 qp->drawLine(x1_ + zero_x - 5, line_y, x1_ + zero_x + 5, line_y);
+                if (line_y != y_starting_pos) {
+                    string y_s = to_string(count * pow(10, graph_->getYOneLength(true)));
+                    delZeros(y_s);
+                    qp->drawText(x1_ + zero_x - 30, line_y + 4, QString::fromStdString(y_s));
+                }
+                count--;
             }
+            count = 1;
             for (int line_y = y_starting_pos - len_y; line_y >= y1_; line_y -= len_y) {
                 qp->drawLine(x1_ + zero_x - 5, line_y, x1_ + zero_x + 5, line_y);
+                string y_s = to_string(count * pow(10, graph_->getYOneLength(true)));
+                delZeros(y_s);
+                qp->drawText(x1_ + zero_x - 30, line_y + 4, QString::fromStdString(y_s));
+                count++;
             }
-            string y_s = to_string(pow(10, graph_->getYOneLength(true)));
-            delZeros(y_s);
-            qp->drawText(x1_ + zero_x - 30, y_starting_pos - len_y + 5, QString::fromStdString(y_s));
         }
     }
 
