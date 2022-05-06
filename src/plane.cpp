@@ -2,6 +2,7 @@
 #define _PLANE_CPP_
 
 #include <iostream>
+#include <cmath>
 #include <QMainWindow>
 #include <QLabel>
 #include <QPainter>
@@ -51,12 +52,20 @@ private:
     QPicture p_;
     bool isXAxis_ = false, isYAxis_ = false;
 
+    void graphPaint() {
+        vector<double> points = *graph_->getValues();
+        paintLines(points);
+    }
+
     void paintLines(vector<double> &points) {
         QPainter qp(&p_);
         qp.setRenderHint(QPainter::Antialiasing);
         qp.setPen(QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap));
         paintAxes(&qp);
         paintNotches(&qp);
+        if (settings.isGrid_) {
+            paintGrid(&qp);
+        }
         qp.setPen(QPen(getQtColor(color_), 2, Qt::SolidLine, Qt::RoundCap));
         for (int i = 0; i < points.size() - 1; i++) {
             qp.drawLine(x1_ + i, y2_ - (int)points[i], x1_ + i + 1, y2_ - (int)points[i + 1]);
@@ -82,66 +91,98 @@ private:
         if (isXAxis_) {
             auto zero_y = graph_->getYZero();
             auto len_x = graph_->getXOneLength();
-            int x_starting_pos;
-            if (isYAxis_) {
-                x_starting_pos = x1_ + graph_->getXZero();
-            }
-            else {
-                x_starting_pos = (x2_ - x1_) / 2;
-            }
+            int x_starting_pos = getXStartingPos();
+            double x_starting_val = graph_->getA();
+            if (isYAxis_) x_starting_val = 0.0;
             count = 0;
             for (int line_x = x_starting_pos; line_x <= x2_; line_x += len_x) {
                 qp->drawLine(line_x, y2_ - zero_y + 5, line_x, y2_ - zero_y - 5);
-                if (line_x != x_starting_pos) {
-                    string x_s = to_string(count * pow(10, graph_->getXOneLength(true)));
-                    delZeros(x_s);
-                    qp->drawText(line_x - 4, y2_ - zero_y - 10, QString::fromStdString(x_s));
-                }
+                string x_s = to_string(x_starting_val + count * pow(10, graph_->getXOneLength(true)));
+                delZeros(x_s);
+                qp->drawText(line_x - 20, y2_ - zero_y - 10, QString::fromStdString(x_s));
                 count++;
             }
             count = -1;
             for (int line_x = x_starting_pos - len_x; line_x >= x1_; line_x -= len_x) {
                 qp->drawLine(line_x, y2_ - zero_y + 5, line_x, y2_ - zero_y - 5);
-                string x_s = to_string(count * pow(10, graph_->getXOneLength(true)));
+                string x_s = to_string(x_starting_val + count * pow(10, graph_->getXOneLength(true)));
                 delZeros(x_s);
-                qp->drawText(line_x - 8, y2_ - zero_y - 10, QString::fromStdString(x_s));
+                qp->drawText(line_x - 20, y2_ - zero_y - 10, QString::fromStdString(x_s));
                 count--;
             }
         }
         if (isYAxis_) {
             auto zero_x = graph_->getXZero();
             auto len_y = graph_->getYOneLength();
-            int y_starting_pos;
-            if (isXAxis_) {
-                y_starting_pos = y2_ - graph_->getYZero();
-            }
-            else {
-                y_starting_pos = (y2_ - y1_) / 2;
-            }
+            int y_starting_pos = getYStartingPos();
+            auto a = (graph_->getFMin() *
+                           pow(10, graph_->getYOneLength(true)));
+            double y_starting_val = floor(graph_->getFMin() *
+                    pow(10, -graph_->getYOneLength(true))) / pow(10, -graph_->getYOneLength(true));
+            if (isXAxis_) y_starting_val = 0.0;
             count = 0;
             for (int line_y = y_starting_pos; line_y <= y2_; line_y += len_y) {
                 qp->drawLine(x1_ + zero_x - 5, line_y, x1_ + zero_x + 5, line_y);
-                if (line_y != y_starting_pos) {
-                    string y_s = to_string(count * pow(10, graph_->getYOneLength(true)));
+                if (!(isXAxis_ && isYAxis_ && line_y == y_starting_pos)) {
+                    string y_s = to_string(y_starting_val + count * pow(10, graph_->getYOneLength(true)));
                     delZeros(y_s);
-                    qp->drawText(x1_ + zero_x - 30, line_y + 4, QString::fromStdString(y_s));
+                    qp->drawText(x1_ + zero_x - 30, line_y - 5, QString::fromStdString(y_s));
                 }
                 count--;
             }
             count = 1;
             for (int line_y = y_starting_pos - len_y; line_y >= y1_; line_y -= len_y) {
                 qp->drawLine(x1_ + zero_x - 5, line_y, x1_ + zero_x + 5, line_y);
-                string y_s = to_string(count * pow(10, graph_->getYOneLength(true)));
+                string y_s = to_string(y_starting_val + count * pow(10, graph_->getYOneLength(true)));
                 delZeros(y_s);
-                qp->drawText(x1_ + zero_x - 30, line_y + 4, QString::fromStdString(y_s));
+                qp->drawText(x1_ + zero_x - 30, line_y - 5, QString::fromStdString(y_s));
                 count++;
             }
         }
     }
 
-    void graphPaint() {
-        vector<double> points = *graph_->getValues();
-        paintLines(points);
+    void paintGrid(QPainter *qp) {
+        auto prevPen = qp->pen();
+        qp->setPen(QPen(Qt::black, 0.5, Qt::SolidLine, Qt::RoundCap));
+        auto x_starting_pos = getXStartingPos();
+        auto len_x = graph_->getXOneLength();
+        for (int line_x = x_starting_pos; line_x <= x2_; line_x += len_x) {
+            qp->drawLine(line_x, y1_, line_x, y2_);
+        }
+        for (int line_x = x_starting_pos - len_x; line_x >= x1_; line_x -= len_x) {
+            qp->drawLine(line_x, y1_, line_x, y2_);
+        }
+        auto y_starting_pos = getYStartingPos();
+        auto len_y = graph_->getYOneLength();
+        for (int line_y = y_starting_pos; line_y <= y2_; line_y += len_y) {
+            qp->drawLine(x1_, line_y, x2_, line_y);
+        }
+        for (int line_y = y_starting_pos - len_y; line_y >= y1_; line_y -= len_y) {
+            qp->drawLine(x1_, line_y, x2_, line_y);
+        }
+        qp->setPen(prevPen);
+    }
+
+    int getXStartingPos() {
+        int x_starting_pos;
+        if (isYAxis_) {
+            x_starting_pos = x1_ + graph_->getXZero();
+        }
+        else {
+            x_starting_pos = x1_;
+        }
+        return x_starting_pos;
+    }
+
+    int getYStartingPos() {
+        int y_starting_pos;
+        if (isXAxis_) {
+            y_starting_pos = y2_ - graph_->getYZero();
+        }
+        else {
+            y_starting_pos = y2_;
+        }
+        return y_starting_pos;
     }
 };
 

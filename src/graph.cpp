@@ -69,6 +69,14 @@ public:
         return (int)(pow(10, exp) * ystep_);
     }
 
+    double getFMax() {
+        return f_max_;
+    }
+
+    double getFMin() {
+        return f_min_;
+    }
+
 private:
     Function *func_;
     double a_, b_, xstep_, ystep_, f_max_, f_min_;
