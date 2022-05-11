@@ -6,8 +6,6 @@
 #include "settings.cpp"
 #include "function.cpp"
 
-using namespace std;
-
 const double eps = 1e-2;
 
 class Graph {
@@ -20,7 +18,7 @@ public:
         this->computeValues();
     }
 
-    vector<double> *getValues() {
+    std::vector<double> *getValues() {
         return &values_;
     }
 
@@ -81,7 +79,7 @@ private:
     Function *func_;
     double a_, b_, xstep_, ystep_, f_max_, f_min_;
     int x1_, y1_, x2_, y2_, zero_ind_ = -1;
-    vector<double> values_;
+    std::vector<double> values_;
 
     double computeXStep() {
         return (b_ - a_) / (x2_ - x1_);

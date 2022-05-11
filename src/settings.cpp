@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-using namespace std;
-
 enum class COLOR{
     BLACK,
     RED,

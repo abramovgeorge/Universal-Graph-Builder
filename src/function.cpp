@@ -4,7 +4,11 @@
 #include <iostream>
 #include <cmath>
 
-using namespace std;
+namespace myFunctions {
+    double integral(double a, double b, double(*f)(double)) {
+        //TODO: implement integral
+    }
+}
 
 class Function {
 public:
@@ -17,7 +21,6 @@ public:
 
 private:
     double (*func_)(double);
-    int i_ = 0;
 };
 
 #endif
