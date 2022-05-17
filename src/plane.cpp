@@ -43,11 +43,38 @@ public:
         return p_;
     }
 
+    std::pair<double, double> solve(double x0) {
+        double eps = settings.eps2_;
+        auto xStep = graph_->getXStep(), yStep = graph_->getYStep();
+        double prev = x0, next = prev - graph_->getFunc()->calculate(prev) / graph_->getFunc()->calculateD(prev);
+        std::vector<std::pair<double, double>> points;
+        auto zero_y = graph_->getYZero();
+        points.emplace_back((prev - graph_->getA()) / xStep, y2_ - zero_y);
+        points.emplace_back((prev - graph_->getA()) / xStep,
+                y2_ - (graph_->getFunc()->calculate(prev) - graph_->getFMin()) * yStep);
+        while (abs(next - prev) > eps) {
+            prev = next;
+            next = prev - graph_->getFunc()->calculate(prev) / graph_->getFunc()->calculateD(prev);
+            points.emplace_back((prev - graph_->getA()) / xStep, y2_ - zero_y);
+            points.emplace_back((prev - graph_->getA()) / xStep,
+                                y2_ - (graph_->getFunc()->calculate(prev) - graph_->getFMin()) * yStep);
+        }
+        solvePoints_ = points;
+        return std::make_pair(next, graph_->getFunc()->calculate(next));
+    }
+
+    void update() {
+        if (curLine_ + 2 < solvePoints_.size()) {
+            curLine_ += 2;
+        }
+    }
+
 private:
-    int x1_, y1_, x2_, y2_;
+    int x1_, y1_, x2_, y2_, curLine_ = 0;
     Graph *graph_;
     COLOR color_;
     QPicture p_;
+    std::vector<std::pair<double, double>> solvePoints_;
     bool isXAxis_ = false, isYAxis_ = false;
 
     void graphPaint() {
@@ -67,6 +94,11 @@ private:
         qp.setPen(QPen(getQtColor(color_), 2, Qt::SolidLine, Qt::RoundCap));
         for (int i = 0; i < points.size() - 1; i++) {
             qp.drawLine(x1_ + i, y2_ - (int)points[i], x1_ + i + 1, y2_ - (int)points[i + 1]);
+        }
+        qp.setPen(QPen(Qt::black, 2, Qt::DashDotLine, Qt::RoundCap));
+        for (int i = 0; i < curLine_; i++) {
+            qp.drawLine(solvePoints_[i].first, solvePoints_[i].second,
+                        solvePoints_[i + 1].first, solvePoints_[i + 1].second);
         }
         qp.end();
     }

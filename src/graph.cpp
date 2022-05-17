@@ -2,11 +2,8 @@
 #define _GRAPH_CPP_
 
 #include <iostream>
-#include <QWidget>
 #include "settings.cpp"
 #include "function.cpp"
-
-const double eps = 1e-2;
 
 class Graph {
 public:
@@ -73,6 +70,18 @@ public:
 
     double getFMin() {
         return f_min_;
+    }
+
+    double getXStep() {
+        return xstep_;
+    }
+
+    double getYStep() {
+        return ystep_;
+    }
+
+    Function* getFunc() {
+        return func_;
     }
 
 private:
