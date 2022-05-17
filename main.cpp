@@ -15,13 +15,13 @@ namespace in {
         return x + integral(0, x, func);
     }
     double dfunction(double x) {
-        return x * sin(x);
+        return 1 + x * sin(x);
     }
     const int color = 1;
     const bool grid = true;
     const double a = -5;
     const double b = 15;
-    const double x0 = 9;
+    const double x0 = 3;
     const int x1 = 0;
     const int y1 = 0;
     const int x2 = 700;
