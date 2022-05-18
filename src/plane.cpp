@@ -2,6 +2,7 @@
 #define _PLANE_CPP_
 
 #include <iostream>
+#include <algorithm>
 #include <cmath>
 #include <QMainWindow>
 #include <QLabel>
@@ -38,8 +39,8 @@ public:
         color_ = color;
     }
 
-    QPicture getPicture() {
-        graphPaint();
+    QPicture getPicture(int curLines) {
+        graphPaint(curLines);
         return p_;
     }
 
@@ -63,26 +64,24 @@ public:
         return std::make_pair(next, graph_->getFunc()->calculate(next));
     }
 
-    void update() {
-        if (curLine_ + 2 < solvePoints_.size()) {
-            curLine_ += 2;
-        }
+    std::vector<std::pair<double, double>> getPoints() {
+        return solvePoints_;
     }
 
 private:
-    int x1_, y1_, x2_, y2_, curLine_ = 0;
+    int x1_, y1_, x2_, y2_;
     Graph *graph_;
     COLOR color_;
     QPicture p_;
     std::vector<std::pair<double, double>> solvePoints_;
     bool isXAxis_ = false, isYAxis_ = false;
 
-    void graphPaint() {
+    void graphPaint(int curLines) {
         std::vector<double> points = *graph_->getValues();
-        paintLines(points);
+        paintLines(points, curLines);
     }
 
-    void paintLines(std::vector<double> &points) {
+    void paintLines(std::vector<double> &points, int curLines) {
         QPainter qp(&p_);
         qp.setRenderHint(QPainter::Antialiasing);
         qp.setPen(QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap));
@@ -96,7 +95,7 @@ private:
             qp.drawLine(x1_ + i, y2_ - (int)points[i], x1_ + i + 1, y2_ - (int)points[i + 1]);
         }
         qp.setPen(QPen(Qt::black, 2, Qt::DashDotLine, Qt::RoundCap));
-        for (int i = 0; i < curLine_; i++) {
+        for (int i = 0; i < std::min(curLines, (int)solvePoints_.size() - 1); i++) {
             qp.drawLine(solvePoints_[i].first, solvePoints_[i].second,
                         solvePoints_[i + 1].first, solvePoints_[i + 1].second);
         }
