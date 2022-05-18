@@ -10,7 +10,7 @@
 #include <cmath>
 #include "plane.cpp"
 
-const int WIDTH = 700;
+const int WIDTH = 800;
 const int HEIGHT = 700;
 
 class mainWidget : public QWidget {
@@ -29,7 +29,7 @@ public:
         QLabel *picture = new QLabel(this);
         QLabel *root = new QLabel(this);
         QLabel *valueInRoot = new QLabel(this);
-        picture->setGeometry(0, 0, 700, 700);
+        picture->setGeometry(0, 0, WIDTH, HEIGHT);
 
         readA->setPlaceholderText("input a:");
         readB->setPlaceholderText("input b:");
@@ -41,7 +41,7 @@ public:
         comboBox->addItem("Red");
         comboBox->addItem("Blue");
 
-        updButton->setGeometry(750, 0, 100, 50);
+        updButton->setGeometry(WIDTH + 50, 0, 100, 50);
         readA->setGeometry(WIDTH + 50, 60, 100, 50);
         readB->setGeometry(WIDTH + 50, 120, 100, 50);
         readX0->setGeometry(WIDTH + 50, 180, 100, 50);

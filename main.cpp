@@ -1,9 +1,6 @@
 #include <iostream>
 #include <QApplication>
 #include <cmath>
-#include "src/function.cpp"
-#include "src/graph.cpp"
-#include "src/plane.cpp"
 #include "src/mainWidget.cpp"
 
 namespace in {
